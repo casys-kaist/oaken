@@ -1,0 +1,8 @@
+accelerate
+sentencepiece
+tokenizers>=0.12.1
+torch
+transformers>=4.28.0
+datasets
+scikit-learn
+matplotlib
