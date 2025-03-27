@@ -11,6 +11,7 @@ N_GPUS = \
     [1,         1,        4,        1,      1,     2,      1,        4        ]
 EVAL_WORKLOAD_LIST  = ("wikitext", "piqa", "winogrande", "hellaswag")
 MODEL_STORAGE_PREFIX = "/data/models"
+BATCH_SIZE = 4
 ##################################################################################
 
 NEED_SCALING = True
@@ -61,7 +62,7 @@ for idx, (model, size, n_gpu) in enumerate(zip(MODEL_LIST, SIZE_LIST, N_GPUS)):
                         f"-q quantizer/kvquant/{model}-{size}.pickle " + \
                         f"--quant-method kvquant " + \
                         f"-t {workload} " + \
-                        f"-b 4 " + \
+                        f"-b {BATCH_SIZE} " + \
                         f"-f 0.01 " + \
                         f"--gpu-count {n_gpu} " + \
                         f"> result/kvquant/{model}-{size}-{workload}.txt"  

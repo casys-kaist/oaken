@@ -10,6 +10,7 @@ SIZE_LIST = \
 N_GPUS = \
     [1,         1,        4,        1,      1,     2,      1,        4        ]
 EVAL_WORKLOAD_LIST  = ("wikitext", "piqa", "winogrande", "hellaswag")
+BATCH_SIZE = 4
 ##################################################################################
 
 
@@ -39,7 +40,7 @@ for idx, (model, size, n_gpu) in enumerate(zip(MODEL_LIST, SIZE_LIST, N_GPUS)):
                         f"-s {size} " + \
                         f"--quant-method kivi " + \
                         f"-t {workload} " + \
-                        f"-b 4 " + \
+                        f"-b {BATCH_SIZE} " + \
                         f"--gpu-count {n_gpu} " + \
                         f"> result/kivi/{model}-{size}-{workload}.txt"  
             # print(workload_cmd)

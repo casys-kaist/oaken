@@ -10,6 +10,7 @@ SIZE_LIST = \
 N_GPUS = \
     [1,        1,        4,        1,      1,     2,      1,        4        ]
 EVAL_WORKLOAD_LIST = ("wikitext", "piqa", "winogrande", "hellaswag")
+BATCH_SIZE = 4
 ##################################################################################
 
 NEED_SCALING = True
@@ -54,7 +55,7 @@ for idx, (model, size, n_gpu) in enumerate(zip(MODEL_LIST, SIZE_LIST, N_GPUS)):
                         f"-q quantizer/tender/{model}-{size}.pt " + \
                         f"--quant-method tender " + \
                         f"-t {workload} " + \
-                        f"-b 4 " + \
+                        f"-b {BATCH_SIZE} " + \
                         f"--gpu-count {n_gpu} " + \
                         f"> result/tender/{model}-{size}-{workload}.txt"  
             # print(workload_cmd)

@@ -3,16 +3,31 @@
 Oaken is an accleration solution that achieves high accuracy and high performance simultaneously through co-designing algorithm and hardware, leveraging online-offline hybrid KV cache quantization algorithm and dedicated quantization/dequantization hardware modules.
 
 This repository provides source code for evaluating the inference accuracy of Oaken and other baselines.
+Running the evaluation code requires Python 3.10 or later and CUDA 12.1 or later.
 
-## 1. Preparing LLMs
+## 1. Preparing environments
 
-### 1.1. Configurating Huggingface Model Path
+### 1.1. Build Docker image
+
+We provide a Dockerfile to build a container with Python 3.10, CUDA 12.1, and Miniconda pre-installed.
+Run the following command to build the Docker image and create the corresponding container.
+
+```sh
+$ docker build --force-rm -t oaken-ae-img .
+$ docker run                              \
+        --name oaken-ae-container         \
+        -it                               \
+        --gpus '"device=[GPU LIST]"'      \
+        oaken-ae-img 
+```
+
+### 1.2. Configurating Huggingface Model Path
 
 1. Open `src/model.py`.
 2. Set `MODEL_STORAGE_PREFIX`, and `MODEL_STORATE_POSTFIX` to the directory where huggingface models are stored.
 3. Huggingface model directory names should follow the format `{model_name}-{model_size}`, such as llama2-7b.
 
-### 1.2. Download Huggingface Model
+### 1.3. Download Huggingface Model
 
 1. Put your Huggingface access token to the variable `HF_TOKEN` in `model_downloader.py`. (Some of the models might require indiviual access grant) 
 2. Select models to download by setting the variables `DOWNLOAD_*` in `model_downloader.py`.
@@ -26,7 +41,7 @@ $ python3 model_downloader.py
 ## 2. Oaken, KVQuant, QServe, Tender
 
 ### 2.1.1. Install Dependencies
-Oaken, KVQuant, QServe, Tender shares the same installation commands.
+Oaken, KVQuant, QServe, and Tender share the same installation commands.
 
 ```sh
 $ git submodule update --init --recursive
@@ -50,7 +65,7 @@ $ pip install flash-attn --no-build-isolation
 ```
 
 ### 2.2. All-in-one Scripts
-You can run the entire accuracy evaluation with the following command.
+You can run the entire accuracy evaluation to get the results for Table 2 with the following command.
 Please configure for list of models and number of GPUs that will be used for evaluation.
 **Note that running the entire accuracy evaluation with this script takes very long time.**
 
@@ -59,6 +74,12 @@ $ python3 scripts/accuracy_oaken.py
 $ python3 scripts/accuracy_kvquant.py
 $ python3 scripts/accuracy_qserve.py
 $ python3 scripts/accuracy_tender.py
+```
+
+Use the following command to get the results for Figure 12(a).
+
+```sh
+$ python3 explore_oaken.py
 ```
 
 The following sections describe the instructions for running individual models and benchmarks.
@@ -192,7 +213,7 @@ $ popd
 ```
 
 ### 3.2. All-in-one Script
-You can run the entire accuracy evaluation with the following command.
+You can run the entire accuracy evaluation to get the results for Table 2 with the following command.
 Please configure for list of models and number of GPUs that will be used for evaluation.
 **Note that running the entire accuracy evaluation with this script takes very long time.**
 
@@ -225,6 +246,9 @@ $ python3 eval_workload.py \
 ```
 
 ## 4. Atom
+
+### 4.1. Install Dependencies
+
 ```sh
 conda create -n atom python=3.10
 conda activate atom
@@ -232,7 +256,7 @@ cd Atom/model
 pip install -r requirements.txt
 ```
 
-### Accuracy Evaluation (Perplexity)
+### 4.2.1. Accuracy Evaluation (Perplexity)
 
 ```sh
 $ cd Atom
@@ -245,7 +269,7 @@ $ ./scripts/run_atom_ppl.sh llama2-7b 1
 $ ./scripts/run_atom_ppl.sh llama2-70b 4
 ```
 
-### Accuracy Evaluation (Zero-shot Accuracy)
+### 4.2.2. Accuracy Evaluation (Zero-shot Accuracy)
 
 ```sh
 $ cd Atom
@@ -263,12 +287,16 @@ export PATH="/usr/local/cuda-[CUDA_VERSION]/bin:${PATH}"
 export LD_LIBRARY_PATH="/usr/local/cuda-[CUDA_VERSION]/lib64:${LD_LIBRARY_PATH}"
 ```
 
-### 5.2. Failing KVQuant profiling with the error: `Expected all tensors to be on the same device ...`
+### 5.2. If you encounter: `RuntimeError: quantile() input tensor is too large`
+
+Use smaller sampling rate rather than 1.0 by giving option `--sample-rate` or modifying `SAMPLING_RATE` variable in the script.
+
+### 5.3. Failing KVQuant profiling with the error: `Expected all tensors to be on the same device ...`
 
 Modify `freqs = (inv_freq_expanded.float() @ position_ids_expanded.float()).transpose(1, 2)` at `src/transformers/models/llama/modeling_llama.py` to
 `freqs = (inv_freq_expanded.float().to(position_ids_expanded.device) @ position_ids_expanded.float()).transpose(1, 2)`.
 
-### 5.3. If you encounter: `cannot import name 'EncoderDecoderCache' from 'transformers'`
+### 5.4. If you encounter: `cannot import name 'EncoderDecoderCache' from 'transformers'`
 
 Install the package with the following command.
 

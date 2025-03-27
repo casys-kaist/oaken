@@ -10,9 +10,10 @@ SIZE_LIST = \
 N_GPUS = \
     [1,        1,        4,        1,      1,     2,      1,        4        ]
 EVAL_WORKLOAD_LIST = ("wikitext", "piqa", "winogrande", "hellaswag")
+BATCH_SIZE = 4
+SAMPLING_RATE = 1.0
 ##################################################################################
 
-SAMPLING_LIST = 1.0
 THRESHOLD = "0.04 0.9 0.06"
 NEED_SCALING = True
 
@@ -31,7 +32,7 @@ for idx, (model, size, n_gpu) in enumerate(zip(MODEL_LIST, SIZE_LIST, N_GPUS)):
                     f"--list_fracs {THRESHOLD} " + \
                     f"-t wikitext " + \
                     f"-b 1 " + \
-                    f"--sample-rate {SAMPLING_LIST} " \
+                    f"--sample-rate {SAMPLING_RATE} " \
                     f"--gpu-count {n_gpu} " + \
                     f"> result/original/{model}-{size}-wikitext-{THRESHOLD.replace(' ', '_')}.txt"  
         # print(profiling_cmd)
@@ -63,7 +64,7 @@ for idx, (model, size, n_gpu) in enumerate(zip(MODEL_LIST, SIZE_LIST, N_GPUS)):
                         f"--quant-outlier " + \
                         f"--quant-method oaken " + \
                         f"-t {workload} " + \
-                        f"-b 4 " + \
+                        f"-b {BATCH_SIZE} " + \
                         f"--gpu-count {n_gpu} " + \
                         f"> result/oaken/{model}-{size}-{workload}-{THRESHOLD.replace(' ', '_')}.txt"  
             # print(workload_cmd)
