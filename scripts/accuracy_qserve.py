@@ -10,7 +10,7 @@ SIZE_LIST = \
 N_GPUS = \
     [1,        1,        4,        1,      1,     2,      1,        4        ]
 EVAL_WORKLOAD_LIST = ("wikitext", "piqa", "winogrande", "hellaswag")
-BATCH_SIZE = 4
+BATCH_SIZE = 1
 ##################################################################################
 
 NEED_SCALING = True

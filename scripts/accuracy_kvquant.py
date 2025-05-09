@@ -4,17 +4,17 @@ import os
 # !!! Please configure the proper GPU # for each model !!!
 ##################################################################################
 MODEL_LIST = \
-    ["llama2",  "llama2", "llama2", "opt",  "opt", "opt", "mistral", "mixtral"]
+    ["llama2",]#  "llama2", "llama2", "opt",  "opt", "opt", "mistral", "mixtral"]
 SIZE_LIST = \
-    ["7b",      "13b",    "70b",    "6.7b", "13b", "30b", "7b",      "8x7b"   ]
+    ["7b",    ]#  "13b",    "70b",    "6.7b", "13b", "30b", "7b",      "8x7b"   ]
 N_GPUS = \
-    [1,         1,        4,        1,      1,     2,      1,        4        ]
-EVAL_WORKLOAD_LIST  = ("wikitext", "piqa", "winogrande", "hellaswag")
+    [1,       ]#  1,        4,        1,      1,     2,      1,        4        ]
+EVAL_WORKLOAD_LIST  = ("wikitext",)# "piqa", "winogrande", "hellaswag")
 MODEL_STORAGE_PREFIX = "/data/models"
-BATCH_SIZE = 4
+BATCH_SIZE = 1
 ##################################################################################
 
-NEED_SCALING = True
+NEED_SCALING = False
 
 for idx, (model, size, n_gpu) in enumerate(zip(MODEL_LIST, SIZE_LIST, N_GPUS)):
     GPU_LIST = list(range(n_gpu))
